@@ -351,10 +351,16 @@ func (mw *GinJWTMiddleware) MiddlewareFunc() gin.HandlerFunc {
 // the graphql functions to verify permissions
 func (mw *GinJWTMiddleware) OptionalMiddlewareFunc() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Set("JWT_PAYLOAD", MapClaims{})
 		_, err := mw.GetClaimsFromJWT(c)
 		if err == nil {
 			mw.middlewareImpl(c)
+		} else {
+			c.Set("JWT_PAYLOAD", MapClaims{})
+			identity := mw.IdentityHandler(c)
+			if identity != nil {
+				c.Set(mw.IdentityKey, identity)
+			}
+			c.Next()
 		}
 	}
 }
