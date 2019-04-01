@@ -345,6 +345,20 @@ func (mw *GinJWTMiddleware) MiddlewareFunc() gin.HandlerFunc {
 	}
 }
 
+// OptionalMiddlewareFunc makes having a JWT token optional. Parses/verifies if
+// present, if its not present, do nothing.
+// Adding this so we can used on a single graphql endpoint and leave it up to
+// the graphql functions to verify permissions
+func (mw *GinJWTMiddleware) OptionalMiddlewareFunc() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("JWT_PAYLOAD", MapClaims{})
+		_, err := mw.GetClaimsFromJWT(c)
+		if err == nil {
+			mw.middlewareImpl(c)
+		}
+	}
+}
+
 func (mw *GinJWTMiddleware) middlewareImpl(c *gin.Context) {
 	claims, err := mw.GetClaimsFromJWT(c)
 	if err != nil {
