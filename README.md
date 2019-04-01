@@ -8,6 +8,20 @@
 [![codebeat badge](https://codebeat.co/badges/c4015f07-df23-4c7c-95ba-9193a12e14b1)](https://codebeat.co/projects/github-com-appleboy-gin-jwt)
 [![Sourcegraph](https://sourcegraph.com/github.com/appleboy/gin-jwt/-/badge.svg)](https://sourcegraph.com/github.com/appleboy/gin-jwt?badge)
 
+## Difference from original fork
+This fork adds an additional middleware function called
+`OptionalMiddlewareFunc()`. This operates the same as `MiddlewareFunc()` with
+the exception that having an JWT is NOT required. If it finds a token, it does
+authenticate and check expiration, like normal, but does nothing if no JWT
+token.
+
+You may ask why make this change. In my use case, I'm using graphql, which
+uses a single API endpoint, and I have some graphql functions that i require
+authentication and some that do not. So I wanted to support both use cases in
+a single API endpoint. If a graphql function requires authentication I check
+claims where I need to, where I do both authentication and authorization.
+#################################################3
+
 This is a middleware for [Gin](https://github.com/gin-gonic/gin) framework.
 
 It uses [jwt-go](https://github.com/dgrijalva/jwt-go) to provide a jwt authentication middleware. It provides additional handler functions to provide the `login` api that will generate the token and an additional `refresh` handler that can be used to refresh tokens.
